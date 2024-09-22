@@ -3,7 +3,7 @@
 ../Core/Src/config.cpp:20:7:void config::ENPB()	16	static
 ../Core/Src/config.cpp:24:7:void config::ENPC()	16	static
 ../Core/Src/config.cpp:28:7:void config::AFIOP()	16	static
-../Core/Src/config.cpp:32:7:void config::UART1EN()	24	static
+../Core/Src/config.cpp:32:7:void config::UART1EN()	16	static
 ../Core/Src/config.cpp:39:7:void config::UART2EN()	24	static
 ../Core/Src/config.cpp:46:7:void config::UART3EN()	24	static
 ../Core/Src/config.cpp:66:2:config::~config()	16	static

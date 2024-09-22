@@ -30,7 +30,8 @@ private:
 	GPIO_TypeDef * Port_;
 	uint8_t Pin_;
 	MODE mode_ ;
-	/*inline*/ static uint8_t Count;
+	/*inline*/ static uint8_t CountA;
+	static uint8_t CountB;
 };
 
 

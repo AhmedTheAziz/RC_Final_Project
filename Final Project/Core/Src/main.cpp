@@ -12,8 +12,9 @@
 
 //Queue Handler
 xQueueHandle xQueue;
-SemaphoreHandle_t  semaphore;
+//SemaphoreHandle_t  semaphore;
 //Tasks Handlers (just in case!!)
+/*
  TaskHandle_t xHandle_Green;
  TaskHandle_t xHandle_RED;
  TaskHandle_t xHandle_BLUE;
@@ -23,11 +24,15 @@ SemaphoreHandle_t  semaphore;
  TaskHandle_t xHandle_Right;
  TaskHandle_t xHandle_Left;
  TaskHandle_t xHandle_Break;
+ */
+
+
+GPIO_TypeDef *  gpiob = GPIOB;
 ///<declerations Begin>
  UART* bl_test = new(UART1INS) UART(UART1INS);
 	/// <Activate Motor>
-	Moto_Config m1_c = {{GPIOA, 5,MODE::Gen}, {GPIOB, 1,MODE::Gen}, {GPIOA, 6,MODE::Gen}}; // activating motor 1 driver as Pin A5 is ins1, B1 is ins2, A6 is Enable (50MHZ output)
-	Moto_Config m2_c = {{GPIOA, 4,MODE::Gen}, {GPIOA, 0,MODE::Gen}, {GPIOB, 0,MODE::Gen}};// activating motor 2 driver as Pin A4 is ins1, A0 is ins2, B0 is Enable (50MHZ output)
+	Moto_Config m1_c = {{GPIOA, 5,MODE::Gen}, {gpiob, 1,MODE::Gen}, {GPIOA, 6,MODE::Gen}}; // activating motor 1 driver as Pin A5 is ins1, B1 is ins2, A6 is Enable (50MHZ output)
+	Moto_Config m2_c = {{GPIOA, 4,MODE::Gen}, {GPIOA, 0,MODE::Gen}, {gpiob, 0,MODE::Gen}};// activating motor 2 driver as Pin A4 is ins1, A0 is ins2, B0 is Enable (50MHZ output)
 	Motor M1(&m1_c); /// OBJ Motor has the name M1 and the address of m1_c
 	Motor M2(&m2_c); /// OBJ Motor has the name M2 and the address of m2_c
 	/// <ACTIVATE Control>
@@ -36,7 +41,7 @@ SemaphoreHandle_t  semaphore;
 	OP LED_B(GPIOA,1,MODE::Gen); // PIN A1 is a 50MHZ Output (Blue LED)
 	OP LED_G(GPIOA,2,MODE::Gen); // PIN A2 is a 50MHZ Output (Green LED)
 	OP LED_R(GPIOA,3,MODE::Gen); // PIN A3 is a 50MHZ Output (Red LED)
-	OP BUZZ(GPIOB,9,MODE::Gen);// PIN B9 is a 50MHZ output (Buzzer)
+	OP BUZZ(gpiob,9,MODE::Gen);// PIN B9 is a 50MHZ output (Buzzer)
 ///<declerations ENDS>
 ///<UART Task Begins>
 void uartTimerCallback(void *pv)
@@ -125,8 +130,9 @@ int main()
 {
 ///<configurations BEGINS>
 config port;
-port.ENPA();//enable RCC for port A
 port.ENPB();//enable RCC for port B
+port.ENPA();//enable RCC for port A
+//port.UART1EN();//enable RCC for UART1
 ///<Configurations ENDS>
 ///<Activating OLED BEGINS>
 /*
@@ -140,7 +146,6 @@ oled.sendString("Hello World", 0,3, 1, 1, 0);
 ///<Activating OLED ENDS>
 ///<Activating RTOS BEGINS>
 xQueue =xQueueCreate(10, sizeof(char));
-semaphore = xSemaphoreCreateMutex();
 if(xQueue != NULL)
 {
 	xTaskCreate(uartTimerCallback,"uart_com",400,NULL,3,NULL); //Receiving Data from (HC-05//TTL) and send it to Queue

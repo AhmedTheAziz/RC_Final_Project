@@ -6,17 +6,23 @@
  */
 #include "op.h"
 
-uint8_t OP::Count;
-	OP::OP(GPIO_TypeDef * GPIO, uint8_t pin, MODE mode) : Port_{GPIO}, Pin_{pin}, mode_{mode}
+uint8_t OP::CountA;
+uint8_t OP::CountB;
+
+OP::OP(GPIO_TypeDef * GPIO, uint8_t pin, MODE mode) : Port_{GPIO}, Pin_{pin}, mode_{mode}
 	{
-		if(mode == MODE::Gen)
+		if(GPIO == GPIOA)
 		{
-			if(Count ==0)
+
+			if(mode == MODE::Gen)
+
+		{
+			if(CountA ==0)
 			{
 				Port_->CRL = 0x00000000;
 				Port_->CRH = 0x00000000;
 			}
-			Count++;
+			CountA++;
 			if(Pin_<PIN_per_REG)
 			{
 				Port_->CRL	|=(OP_50MHZ<<(Pin_ * BIT_per_PIN));
@@ -25,16 +31,16 @@ uint8_t OP::Count;
 			{
 				Port_->CRH |=(OP_50MHZ<<((Pin_ * BIT_per_PIN)-BIT_per_REG));
 			}
-			OFF();
 		}
+
 		else if (mode == MODE::AF)
 		{
-			if(Count ==0)
+			if(CountA ==0)
 			{
 				Port_->CRL = 0x00000000;
 				Port_->CRH = 0x00000000;
 			}
-			Count++;
+			CountA++;
 			if(Pin_<PIN_per_REG)
 			{
 				Port_->CRL	|=(OP_AF50MHZ<<(Pin_ * BIT_per_PIN));
@@ -43,10 +49,53 @@ uint8_t OP::Count;
 			{
 				Port_->CRH |=(OP_AF50MHZ<<((Pin_ * BIT_per_PIN)-BIT_per_REG));
 			}
+		}
+
+	}		else if(GPIO == GPIOB)
+	{
+
+		if(mode == MODE::Gen)
+
+	{
+		if(CountB ==0)
+		{
+			Port_->CRL = 0x00000000;
+			Port_->CRH = 0x00000000;
+		}
+		CountB++;
+		if(Pin_<PIN_per_REG)
+		{
+			Port_->CRL	|=(OP_50MHZ<<(Pin_ * BIT_per_PIN));
+		}
+		else
+		{
+			Port_->CRH |=(OP_50MHZ<<((Pin_ * BIT_per_PIN)-BIT_per_REG));
+		}
+	}
+
+	else if (mode == MODE::AF)
+	{
+		if(CountB ==0)
+		{
+			Port_->CRL = 0x00000000;
+			Port_->CRH = 0x00000000;
+		}
+		CountB++;
+		if(Pin_<PIN_per_REG)
+		{
+			Port_->CRL	|=(OP_AF50MHZ<<(Pin_ * BIT_per_PIN));
+		}
+		else
+		{
+			Port_->CRH |=(OP_AF50MHZ<<((Pin_ * BIT_per_PIN)-BIT_per_REG));
+		}
+	}
+
+}
 			OFF();
 		}
 
-	}
+
 	void OP::ON()
 	{
 		Port_->ODR|=(1<<Pin_);

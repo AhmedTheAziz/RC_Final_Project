@@ -34,10 +34,10 @@
 			//UART1 INITIATE
 			// Activating Clock enable
 			//              AFIO     GPIOA    USART1
-			RCC->APB2ENR = (1<<0) | (1<<2) | (1<<14);
+			RCC->APB2ENR |= (1<<0) | (1<<2) | (1<<14);
 			//Activating TX(O/P PA9) and RX (I/P PA10) pins
-			GPIOA->CRH = (0x000B<<4); // PA9 OutPut AFIO TX
-			GPIOA->CRH = (4<<8); //PA10 InPut Floating RX
+			GPIOA->CRH |= (0x000B<<4); // PA9 OutPut AFIO TX
+			GPIOA->CRH |= (1<<10); //PA10 InPut Floating RX
 			// Setting BAUD Rate
 			BRR = USART_div;
 			//Enable Transmission and Receiving

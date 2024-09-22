@@ -31,10 +31,10 @@
  }
  void config::UART1EN()
  {
-	 config	afiop,porta; // PA8=CK, PA9=TX, PA10=RX
-		afiop.AFIOP();
-		porta.ENPA();
-	 RCC->APB2ENR |=(1<<14);
+	// PA8=CK, PA9=TX, PA10=RX
+		//              AFIO     GPIOA    USART1
+	RCC->APB2ENR |= (1<<0) | (1<<2) | (1<<14);
+
  }
  void config::UART2EN()
  {

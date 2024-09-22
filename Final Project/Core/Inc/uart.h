@@ -25,6 +25,8 @@
  * */
 #include "main.h"
 #include <string>
+#include "op.h"
+#include "ip.h"
 
 #ifndef INC_UART_H_
 #define INC_UART_H_
@@ -54,6 +56,7 @@ public:
 	void* operator new(size_t, UART_Instance uart);
 
 private:
+
 	//REGISTERS..
 	uint32_t SR;
 	uint32_t DR;
