@@ -1,0 +1,665 @@
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file           : main.c
+  * @brief          : Main program body
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2024 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+
+#include "oled.h"
+
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+//I2C_HandleTypeDef hi2c1;
+
+/* USER CODE BEGIN PV */
+
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
+//static void MX_GPIO_Init(void);
+static void MX_I2C1_Init(void);
+/* USER CODE BEGIN PFP */
+
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
+
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void)
+{
+
+  /* USER CODE BEGIN 1 */
+
+  /* USER CODE END 1 */
+
+  /* MCU Configuration--------------------------------------------------------*/
+OLED_INIT();
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+ // HAL_Init(); //initialize HardWare
+
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
+  /* Configure the system clock */
+ // SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
+ // MX_GPIO_Init();
+ // MX_I2C1_Init();
+  /* USER CODE BEGIN 2 */
+
+ //SSD1306_Init();
+ char snum[5];
+
+
+ SSD1306_GotoXY(0,0);
+ SSD1306_Puts ("Robotics" ,&Font_11x18,1);
+ SSD1306_GotoXY (0,30);
+ SSD1306_Puts ("Corner" , &Font_11x18, 1);
+ SSD1306_UpdateScreen();
+ HAL_Delay(1000);
+ SSD1306_ScrollRight(0,7);
+ HAL_Delay(3000);
+ SSD1306_ScrollLeft(0,7);
+ HAL_Delay(3000);
+ SSD1306_Stopscroll();
+ SSD1306_Clear();
+ SSD1306_GotoXY(35,0);
+ SSD1306_Puts ("GOAL!", &Font_11x18 , 1);
+
+ /* USER CODE END 2 */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
+	  for(int x=1;x<=10000 ;x++)
+	  {
+		  itoa(x,snum,10);
+		  SSD1306_GotoXY (0,30);
+		  SSD1306_Puts("               ", &Font_16x26,1);
+		  SSD1306_UpdateScreen();
+		  if(x<10)
+		  {
+			  SSD1306_GotoXY(53,30); // 1 Digit
+		  }
+		  else if(x<100)
+		  {
+			  SSD1306_GotoXY(45,30); // 2 Digits
+		  }
+		  else if(x<1000)
+		  {
+			  SSD1306_GotoXY(37,30); // 3 Digits
+		  }
+		  else
+		{
+			  SSD1306_GotoXY(30,30); // 4 Digits
+		}
+		  SSD1306_Puts(snum, &Font_16x26,1);
+		  SSD1306_UpdateScreen();
+		  HAL_Delay(1000);
+	  }
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
+}
+()()()()()
+
+#include "control.h" // control motor to go forward,backward, right pr left
+#include "uart.h" // enable uart to communicate with Laptop/smart-phone using  HC-05
+#include "oled.h"
+#include "string.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "list.h"
+#include "queue.h"
+//#include "tasks.h"
+
+#define BUFFER_SIZE 10
+#define COMMAND_LENGTH 1
+
+char buffer[BUFFER_SIZE];
+uint8_t bufferIndex = 0;
+
+TaskHandle_t commandProcessingTaskHandle;
+TaskHandle_t uartReceiveTaskHandle;
+TaskHandle_t ledControlTaskHandle;
+TaskHandle_t motorControlTaskHandle;
+
+void uartReceiveTask(void *pvParameters);
+void commandProcessingTask(void *pvParameters) ;
+void ledControlTask(void *pvParameters);
+void motorControlTask(void *pvParameters);
+
+
+int main()
+{
+///<configurations>
+config porta;
+config portb;
+porta.ENPA();//enable RCC for port A
+portb.ENPB();//enable RCC for port B
+/// <Activating I/P's>
+IP f(GPIOB,4); //PIN B4 is an Input (push Button)
+IP r(GPIOB,5); //PIN B5 is an Input (push Button)
+IP l(GPIOB,8); //PIN B8 is an Input (push Button)
+/// <Activating O/P 's
+OP LED_B(GPIOA,1,MODE::Gen); // PIN A1 is a 50MHZ Output (Blue LED)
+OP LED_G(GPIOA,2,MODE::Gen); // PIN A2 is a 50MHZ Output (Green LED)
+OP LED_R(GPIOA,3,MODE::Gen); // PIN A3 is a 50MHZ Output (Red LED)
+OP BUZZ(GPIOB,9,MODE::Gen);// PIN B9 is a 50MHZ output (Buzzer)
+/// <Activate Motor>
+Moto_Config m1_c = {{GPIOA, 5,MODE::Gen}, {GPIOB, 1,MODE::Gen}, {GPIOA, 6,MODE::Gen}}; // activating motor 1 driver as Pin A5 is ins1, B1 is ins2, A6 is Enable (50MHZ output)
+Moto_Config m2_c = {{GPIOA, 4,MODE::Gen}, {GPIOA, 0,MODE::Gen}, {GPIOB, 0,MODE::Gen}};// activating motor 2 driver as Pin A4 is ins1, A0 is ins2, B0 is Enable (50MHZ output)
+Motor M1(&m1_c); /// OBJ Motor has the name M1 and the address of m1_c
+Motor M2(&m2_c); /// OBJ Motor has the name M2 and the address of m2_c
+/// <ACTIVATE Control>
+Control motion(&M1,&M2); // controlling both motors with motion go forward, backward,right or left
+/// <ACtivate UART>
+UART*  bl_test = new(UART1INS) UART(UART1INS); // activating uart sending and receiving with HC-05
+bl_test->INIT(1);
+///<activate light & Buzzer>
+//L8nbuzz option_; // Activating LEDs and Buzzer
+//activating oled
+I2C i2c(I2C1, GPIOB); // Create an I2C object
+Oled oled(i2c); // Create an Oled object
+
+///<Trying RTOS>
+// Create tasks
+xTaskCreate(uartReceiveTask, "UART Receive Task", 256, NULL, 1, &uartReceiveTaskHandle);
+xTaskCreate(commandProcessingTask, "Command Processing Task", 256, NULL, 2, &commandProcessingTaskHandle);
+xTaskCreate(ledControlTask, "LED Control Task", 256, NULL, 2, &ledControlTaskHandle);
+xTaskCreate(motorControlTask, "Motor Control Task", 256, NULL, 2, &motorControlTaskHandle);
+// Start the scheduler
+vTaskStartScheduler();
+
+/*
+ * oled.init(); // Initialize the OLED screen
+oled.sendString("Hello World", 0,3, 1, 1, 0);
+   oled.setDisplayOptions(1, 1, 0); // Set display options (fontSize, fontColor, orientation)
+   oled.display("Hello, World!"); // Send a string to the OLED screen at (0, 0) coordinates
+*/
+
+while(1)
+{
+
+/*
+	f.getstats(); //return Port_->IDR &(1<<Pin_);
+	r.getstats(); //return Port_->IDR &(1<<Pin_);
+	l.getstats(); //return Port_->IDR &(1<<Pin_);
+
+
+if(f.getstats()!=0 && r.getstats()!=0 && l.getstats() !=0 )
+{
+		motion.Forward();
+		LED_B.OFF();
+		LED_G.ON();
+		LED_R.OFF();
+		BUZZ.OFF();
+
+
+}
+else if (f.getstats()==0 && r.getstats()!=0 && l.getstats() !=0)
+{
+		motion.Backward();
+		LED_B.OFF();
+		LED_G.OFF();
+		LED_R.ON();
+		BUZZ.ON();
+}
+else if (f.getstats()!=0 && r.getstats()==0 && l.getstats() !=0)
+{
+		motion.Right();
+		LED_B.ON();
+		LED_G.OFF();
+		LED_R.OFF();
+		BUZZ.OFF();
+
+}
+else if (f.getstats()!=0 && r.getstats()!=0 && l.getstats() ==0)
+{
+		motion.Left();
+		LED_B.ON();
+		LED_G.OFF();
+		LED_R.OFF();
+		BUZZ.OFF();
+}
+ else
+{
+	motion.BREAK();
+	LED_B.OFF();
+	LED_G.OFF();
+	LED_R.OFF();
+	BUZZ.OFF();
+}
+*/
+	/*std::string L_G ="LED is GREEN!!\r\n";
+	std::string L_B ="LED is BLUE!!\r\n";
+	auto reading=bl_test->Read();
+	if(reading == 'w')
+	{
+		LED_G.OFF();
+		LED_B.ON();
+		bl_test->Send(L_B);
+	}
+	else
+	{
+		LED_B.OFF();
+		LED_G.ON();
+		bl_test->Send(L_G);
+	}
+	//LED_R.ON();
+
+
+
+
+while(f.getstats()==0)
+{
+	motion.Forward();
+	LED_B.ON();
+	LED_G.OFF();
+	LED_R.OFF();
+	BUZZ.OFF();
+}
+*/
+}
+return 0;
+}
+
+void uartReceiveTask(void *pvParameters)
+{
+	UART*  bl = new(UART1INS) UART(UART1INS); // activating uart sending and receiving with HC-05
+	bl->INIT(1);
+    while (1) {
+        // Receive data from UART
+        char receivedChar = bl->Read();
+
+        // Store received data in a buffer
+        if (bufferIndex < BUFFER_SIZE) {
+            buffer[bufferIndex++] = receivedChar;
+        } else {
+            // Buffer overflow, reset index
+            bufferIndex = 0;
+        }
+
+        // Check if a complete command is received
+        if (bufferIndex == COMMAND_LENGTH) {
+            // Notify the Command Processing Task
+            xTaskNotifyGive(commandProcessingTaskHandle);
+        }
+    }
+}
+
+// Command Processing Task
+void commandProcessingTask(void *pvParameters) {
+    char command;
+    while (1) {
+        // Wait for notification from UART Receive Task
+        xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
+
+        // Process the received command
+        command = buffer[0];
+        //processCommand(command);
+
+        // Clear the buffer
+        bufferIndex = 0;
+        memset(buffer, 0, BUFFER_SIZE);
+    }
+}
+
+// LED Control Task
+void ledControlTask(void *pvParameters) {
+    char command;
+    OP LED_B(GPIOA,1,MODE::Gen); // PIN A1 is a 50MHZ Output (Blue LED)
+    OP LED_G(GPIOA,2,MODE::Gen); // PIN A2 is a 50MHZ Output (Green LED)
+    OP LED_R(GPIOA,3,MODE::Gen); // PIN A3 is a 50MHZ Output (Red LED)
+    OP BUZZ(GPIOB,9,MODE::Gen);// PIN B9 is a 50MHZ output (Buzzer)
+    while (1) {
+        // Wait for notification from Command Processing Task
+        xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
+
+        // Turn on/off LEDs based on the received command
+        command = buffer[0];
+        if (command == 'w')
+        {
+            LED_G.ON();
+        }
+        else if (command == 'd')
+        {
+            LED_B.ON();
+        }
+        else if (command == 's')
+        {
+            LED_R.ON();
+            BUZZ.ON();
+        }
+        else if (command == 'a')
+        {
+            LED_B.ON();
+        }
+        else if (command == 'p')
+        {
+            LED_G.ON();
+            LED_B.ON();
+            LED_R.ON();
+            BUZZ.OFF();
+        }
+    }
+}
+
+// Motor Control Task
+void motorControlTask(void *pvParameters)
+{
+    char command;
+    Moto_Config m1_c = {{GPIOA, 5,MODE::Gen}, {GPIOB, 1,MODE::Gen}, {GPIOA, 6,MODE::Gen}}; // activating motor 1 driver as Pin A5 is ins1, B1 is ins2, A6 is Enable (50MHZ output)
+    Moto_Config m2_c = {{GPIOA, 4,MODE::Gen}, {GPIOA, 0,MODE::Gen}, {GPIOB, 0,MODE::Gen}};// activating motor 2 driver as Pin A4 is ins1, A0 is ins2, B0 is Enable (50MHZ output)
+    Motor M1(&m1_c); /// OBJ Motor has the name M1 and the address of m1_c
+    Motor M2(&m2_c); /// OBJ Motor has the name M2 and the address of m2_c
+    Control motion(&M1,&M2);
+    while (1) {
+        // Wait for notification from Command Processing Task
+        xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
+
+        // Move the car based on the received command
+        command = buffer[0];
+        if (command == 'w')
+        {
+            motion.Forward();
+        }
+        else if (command == 'd')
+        {
+            motion.Right();
+        }
+        else if (command == 's')
+        {
+            motion.Backward();
+        }
+        else if (command == 'a')
+        {
+            motion.Left();
+        }
+        else if (command == 'p')
+        {
+            motion.BREAK();
+        }
+    }
+}
+
+()()()()()
+
+#include "control.h"
+#include "uart.h"
+#include "oled.h"
+#include "string.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+// declaring TaskHandles
+TaskHandle_t uartReceiveTaskHandle;
+TaskHandle_t commandProcessingTaskHandle;
+TaskHandle_t ledControlTaskHandle;
+TaskHandle_t motorControlTaskHandle;
+// Define constants for task priorities and stack sizes
+#define UART_RECEIVE_TASK_PRIORITY 1
+#define COMMAND_PROCESSING_TASK_PRIORITY 2
+#define LED_CONTROL_TASK_PRIORITY 2
+#define MOTOR_CONTROL_TASK_PRIORITY 2
+#define TASK_STACK_SIZE 300
+//functions
+void handleForward()
+{
+    OP LED_G(GPIOA, 2, MODE::Gen);
+    Moto_Config m1_c = {{GPIOA, 5, MODE::Gen}, {GPIOB, 1, MODE::Gen}, {GPIOA, 6, MODE::Gen}};
+    Moto_Config m2_c = {{GPIOA, 4, MODE::Gen}, {GPIOA, 0, MODE::Gen}, {GPIOB, 0, MODE::Gen}};
+    Motor M1(&m1_c);
+    Motor M2(&m2_c);
+    Control motion(&M1, &M2);
+    motion.Forward(); // Move the car forward
+    LED_G.ON(); // Turn on the green LED
+}
+
+void handleRight()
+{
+    OP LED_B(GPIOA, 1, MODE::Gen);
+    Moto_Config m1_c = {{GPIOA, 5, MODE::Gen}, {GPIOB, 1, MODE::Gen}, {GPIOA, 6, MODE::Gen}};
+    Moto_Config m2_c = {{GPIOA, 4, MODE::Gen}, {GPIOA, 0, MODE::Gen}, {GPIOB, 0, MODE::Gen}};
+    Motor M1(&m1_c);
+    Motor M2(&m2_c);
+    Control motion(&M1, &M2);
+    motion.Right(); // Turn the car right
+    LED_B.ON(); // Turn on the blue LED
+}
+
+void handleBackward()
+{
+
+    OP LED_R(GPIOA, 3, MODE::Gen);
+    OP BUZZ(GPIOB, 9, MODE::Gen);
+    Moto_Config m1_c = {{GPIOA, 5, MODE::Gen}, {GPIOB, 1, MODE::Gen}, {GPIOA, 6, MODE::Gen}};
+    Moto_Config m2_c = {{GPIOA, 4, MODE::Gen}, {GPIOA, 0, MODE::Gen}, {GPIOB, 0, MODE::Gen}};
+    Motor M1(&m1_c);
+    Motor M2(&m2_c);
+    Control motion(&M1, &M2);
+    motion.Backward(); // Move the car backward
+    LED_R.ON(); // Turn on the red LED
+    BUZZ.ON();
+}
+
+void handleLeft()
+{
+    OP LED_B(GPIOA, 1, MODE::Gen);
+    Moto_Config m1_c = {{GPIOA, 5, MODE::Gen}, {GPIOB, 1, MODE::Gen}, {GPIOA, 6, MODE::Gen}};
+    Moto_Config m2_c = {{GPIOA, 4, MODE::Gen}, {GPIOA, 0, MODE::Gen}, {GPIOB, 0, MODE::Gen}};
+    Motor M1(&m1_c);
+    Motor M2(&m2_c);
+    Control motion(&M1, &M2);
+    motion.Left(); // Turn the car left
+    LED_B.ON(); // Turn on the blue LED
+}
+
+void handleBreak()
+{
+    OP LED_B(GPIOA, 1, MODE::Gen);
+    OP LED_G(GPIOA, 2, MODE::Gen);
+    OP LED_R(GPIOA, 3, MODE::Gen);
+    OP BUZZ(GPIOB, 9, MODE::Gen);
+    Moto_Config m1_c = {{GPIOA, 5, MODE::Gen}, {GPIOB, 1, MODE::Gen}, {GPIOA, 6, MODE::Gen}};
+    Moto_Config m2_c = {{GPIOA, 4, MODE::Gen}, {GPIOA, 0, MODE::Gen}, {GPIOB, 0, MODE::Gen}};
+    Motor M1(&m1_c);
+    Motor M2(&m2_c);
+    Control motion(&M1, &M2);
+    motion.BREAK(); // Stop the car
+    LED_G.ON(); // Turn on the green LED
+    LED_B.ON(); // Turn on the blue LED
+    LED_R.ON(); // Turn on the red LED
+}
+// Define a struct to represent a command
+struct Command
+{
+    char command;
+    void (*handler)();
+};
+Command commandHandlers[] =
+{
+    {'w', handleForward},
+    {'d', handleRight},
+    {'s', handleBackward},
+    {'a', handleLeft},
+    {'p', handleBreak},
+};
+
+// Define a queue to store received commands
+QueueHandle_t commandQueue;
+
+// UART Receive Task
+void uartReceiveTask(void *pvParameters)
+{
+    UART* bl = new(UART1INS) UART(UART1INS);
+    bl->INIT(1);
+    char receivedChar;
+    while (1) {
+        receivedChar = bl->Read();
+        if (receivedChar != -1) { // Check for errors
+            xQueueSend(commandQueue, &receivedChar, portMAX_DELAY);
+        }
+    }
+}
+
+// Command Processing Task
+void commandProcessingTask(void *pvParameters)
+{
+    char command;
+    while (1) {
+        xQueueReceive(commandQueue, &command, portMAX_DELAY);
+        // Process the received command
+        for (const auto& handler : commandHandlers) {
+            if (command == handler.command) {
+                handler.handler();
+                break;
+            }
+        }
+
+    }
+}
+
+// LED Control Task
+void ledControlTask(void *pvParameters)
+{
+    OP LED_B(GPIOA, 1, MODE::Gen);
+    OP LED_G(GPIOA, 2, MODE::Gen);
+    OP LED_R(GPIOA, 3, MODE::Gen);
+    OP BUZZ(GPIOB, 9, MODE::Gen);
+    char command;
+    while (1) {
+        xQueueReceive(commandQueue, &command, portMAX_DELAY);
+        // Turn on/off LEDs based on the received command
+        switch (command) {
+            case 'w':
+                LED_G.ON();
+                break;
+            case 'd':
+                LED_B.ON();
+                break;
+            case 's':
+            	LED_R.ON();
+            	BUZZ.ON();
+            	break;
+            case 'a':
+            	LED_B.ON();
+            	break;
+            case 'p':
+                LED_G.ON();
+                LED_B.ON();
+            	LED_R.ON();
+                break;
+        }
+    }
+}
+
+// Motor Control Task
+void motorControlTask(void *pvParameters)
+ {
+    Moto_Config m1_c = {{GPIOA, 5, MODE::Gen}, {GPIOB, 1, MODE::Gen}, {GPIOA, 6, MODE::Gen}};
+    Moto_Config m2_c = {{GPIOA, 4, MODE::Gen}, {GPIOA, 0, MODE::Gen}, {GPIOB, 0, MODE::Gen}};
+    Motor M1(&m1_c);
+    Motor M2(&m2_c);
+    Control motion(&M1, &M2);
+    char command;
+    while (1) {
+        xQueueReceive(commandQueue, &command, portMAX_DELAY);
+        // Move the car based on the received command
+        switch (command) {
+            case 'w':
+                motion.Forward();
+                break;
+            case 'd':
+                motion.Right();
+                break;
+            case 's':
+            	motion.Backward();
+            	break;
+            case 'a':
+            	motion.Left();
+            	break;
+            case 'p':
+            	motion.BREAK();
+            	break;
+        }
+    }
+}
+
+int main()
+{
+	config porta, portb;
+	porta.ENPA();
+	porta.ENPB();
+    // Initialize the RTOS
+	vTaskPrioritySet(uartReceiveTaskHandle, UART_RECEIVE_TASK_PRIORITY);
+    vTaskPrioritySet(commandProcessingTaskHandle, COMMAND_PROCESSING_TASK_PRIORITY);
+    vTaskPrioritySet(ledControlTaskHandle, LED_CONTROL_TASK_PRIORITY);
+    vTaskPrioritySet(motorControlTaskHandle, MOTOR_CONTROL_TASK_PRIORITY);
+
+    // Create tasks
+    xTaskCreate(uartReceiveTask, "UART Receive Task", TASK_STACK_SIZE, NULL, UART_RECEIVE_TASK_PRIORITY, &uartReceiveTaskHandle);
+    xTaskCreate(commandProcessingTask, "Command Processing Task", TASK_STACK_SIZE, NULL, COMMAND_PROCESSING_TASK_PRIORITY, &commandProcessingTaskHandle);
+    xTaskCreate(ledControlTask, "LED Control Task", TASK_STACK_SIZE, NULL, LED_CONTROL_TASK_PRIORITY, &ledControlTaskHandle);
+    xTaskCreate(motorControlTask, "Motor Control Task", TASK_STACK_SIZE, NULL, MOTOR_CONTROL_TASK_PRIORITY, &motorControlTaskHandle);
+
+    // Create a queue to store received commands
+    commandQueue = xQueueCreate(10, sizeof(char));
+
+    // Start the scheduler
+    vTaskStartScheduler();
+
+    return 0;
+}
+
+()()()()()

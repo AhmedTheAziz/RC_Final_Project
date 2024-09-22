@@ -1,0 +1,97 @@
+#include "config.h"
+#include "ip.h"
+#include "op.h"
+
+struct Moto_Config {
+    OP in1;
+    OP in2;
+    OP en;
+};
+
+struct Motor {
+    Motor(Moto_Config* config) : Config_(config) {
+        Config_->in1.OFF();
+        Config_->in2.OFF();
+        Config_->en.OFF();
+    }
+
+    void CW() {
+        Config_->in1.ON();
+        Config_->in2.OFF();
+        Config_->en.ON();
+    }
+
+    void CCW() {
+        Config_->in1.OFF();
+        Config_->in2.ON();
+        Config_->en.ON();
+    }
+
+    void STOP() {
+        Config_->in1.OFF();
+        Config_->in2.OFF();
+        Config_->en.OFF();
+    }
+
+    Moto_Config* Config_;
+};
+
+class Control {
+public:
+    Control(Motor* m1, Motor* m2) : m1_(m1), m2_(m2) {
+        m1_->STOP();
+        m2_->STOP();
+    }
+
+    void Forward() {
+        m1_->CW();
+        m2_->CW();
+    }
+
+    void Backward() {
+        m1_->CCW();
+        m2_->CW();
+    }
+
+    void Right() {
+        m1_->STOP();
+        m2_->CCW();
+    }
+
+    void Left() {
+        m1_->CW();
+        m2_->STOP();
+    }
+
+private:
+    Motor* m1_;  // RHS Motor
+    Motor* m2_;  // LHS Motor
+};
+
+void delay(float seconds) {
+    uint32_t count = (uint32_t)(seconds * 1000000); // Convert seconds to microseconds
+    while (count--) {
+        // Do nothing, just wait
+    }
+}
+
+int main() {
+    config porta;
+    config portb;
+    porta.ENPA();
+    portb.ENPB();
+
+    Moto_Config m1_c = {{GPIOA, 5}, {GPIOB, 1}, {GPIOA, 6}};
+    Moto_Config m2_c = {{GPIOA, 4}, {GPIOA, 0}, {GPIOB, 0}};
+
+    Motor M1(&m1_c);
+    Motor M2(&m2_c);
+    Control motion(&M1, &M2);
+
+    while (1)
+    {
+        M1.CW();
+        M2.CCW();
+    }
+    return 0;
+}

@@ -1,0 +1,1 @@
+../Core/Src/font.cpp:532:16:const char* FONTS_GetStringSize(const char*, FONTS_SIZE_t*, const FontDef_t*)	1

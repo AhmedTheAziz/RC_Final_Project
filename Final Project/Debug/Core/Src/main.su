@@ -1,0 +1,7 @@
+../Core/Src/main.cpp:42:6:void uartTimerCallback(void*)	24	static
+../Core/Src/main.cpp:54:6:void uart_READ(void*)	24	static
+../Core/Src/main.cpp:124:5:int main()	24	static
+../Core/Inc/motor.h:14:8:Moto_Config::~Moto_Config()	16	static
+../Core/Src/main.cpp:156:1:void __static_initialization_and_destruction_0(int, int)	32	static
+../Core/Src/main.cpp:156:1:cpp)	8	static
+../Core/Src/main.cpp:156:1:cpp)	8	static

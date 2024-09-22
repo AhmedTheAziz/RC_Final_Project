@@ -1,0 +1,6 @@
+../Core/Src/control.cpp:10:2:Control::Control(Motor*, Motor*)	24	static
+../Core/Src/control.cpp:16:7:void Control::Forward()	16	static
+../Core/Src/control.cpp:21:6:void Control::Backward()	16	static
+../Core/Src/control.cpp:26:7:void Control::Right()	16	static
+../Core/Src/control.cpp:32:7:void Control::Left()	16	static
+../Core/Src/control.cpp:37:7:void Control::BREAK()	16	static
