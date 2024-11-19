@@ -1,0 +1,2 @@
+../Core/Src/clock72.cpp:10:2:Clock72::Clock72()	2
+../Core/Src/clock72.cpp:18:6:void Clock72::Clock_Init()	3

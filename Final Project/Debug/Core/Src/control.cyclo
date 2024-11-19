@@ -1,6 +1,6 @@
-../Core/Src/control.cpp:10:2:Control::Control(Motor*, Motor*)	1
-../Core/Src/control.cpp:16:7:void Control::Forward()	1
-../Core/Src/control.cpp:21:6:void Control::Backward()	1
-../Core/Src/control.cpp:26:7:void Control::Right()	1
-../Core/Src/control.cpp:32:7:void Control::Left()	1
-../Core/Src/control.cpp:37:7:void Control::BREAK()	1
+../Core/Src/control.cpp:9:2:Control::Control(Motor*, Motor*)	1
+../Core/Src/control.cpp:15:7:void Control::Forward(unsigned int)	1
+../Core/Src/control.cpp:21:7:void Control::Backward(unsigned int)	1
+../Core/Src/control.cpp:27:7:void Control::Right(unsigned int)	1
+../Core/Src/control.cpp:34:7:void Control::Left(unsigned int)	1
+../Core/Src/control.cpp:40:7:void Control::BREAK()	1

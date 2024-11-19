@@ -23,7 +23,7 @@ Core/Src/uart.o: ../Core/Src/uart.cpp ../Core/Inc/uart.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h \
  ../Core/Inc/config.h ../Core/Inc/ip.h ../Core/Inc/utils.h \
- ../Core/Inc/op.h
+ ../Core/Inc/op.h ../Core/Inc/timer3.h ../Core/Inc/clock72.h
 ../Core/Inc/uart.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
@@ -53,3 +53,5 @@ Core/Src/uart.o: ../Core/Src/uart.cpp ../Core/Inc/uart.h \
 ../Core/Inc/ip.h:
 ../Core/Inc/utils.h:
 ../Core/Inc/op.h:
+../Core/Inc/timer3.h:
+../Core/Inc/clock72.h:

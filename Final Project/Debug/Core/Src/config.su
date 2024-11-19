@@ -1,9 +1,10 @@
-../Core/Src/config.cpp:9:2:config::config()	16	static
-../Core/Src/config.cpp:16:7:void config::ENPA()	16	static
-../Core/Src/config.cpp:20:7:void config::ENPB()	16	static
-../Core/Src/config.cpp:24:7:void config::ENPC()	16	static
-../Core/Src/config.cpp:28:7:void config::AFIOP()	16	static
-../Core/Src/config.cpp:32:7:void config::UART1EN()	16	static
-../Core/Src/config.cpp:39:7:void config::UART2EN()	24	static
-../Core/Src/config.cpp:46:7:void config::UART3EN()	24	static
-../Core/Src/config.cpp:66:2:config::~config()	16	static
+../Core/Src/config.cpp:12:2:config::config()	16	static
+../Core/Src/config.cpp:23:8:void config::ENPA()	16	static
+../Core/Src/config.cpp:27:8:void config::ENPB()	16	static
+../Core/Src/config.cpp:31:8:void config::ENPC()	16	static
+../Core/Src/config.cpp:35:8:void config::AFIOP()	16	static
+../Core/Src/config.cpp:39:7:void config::TIM3EN()	16	static
+../Core/Src/config.cpp:43:8:void config::UART1EN()	16	static
+../Core/Src/config.cpp:50:7:void config::UART2EN()	24	static
+../Core/Src/config.cpp:57:7:void config::UART3EN()	24	static
+../Core/Src/config.cpp:77:2:config::~config()	16	static

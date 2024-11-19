@@ -31,7 +31,7 @@
 #ifndef INC_UART_H_
 #define INC_UART_H_
 
-#define FOSC 8000000
+#define FOSC 72000000
 #define BAUD 9600
 enum UART_Instance : uint32_t
 {
@@ -40,7 +40,7 @@ enum UART_Instance : uint32_t
 	UART3INS = 0x40004800,
 
 };
-const double USART_div = FOSC/(BAUD);
+const double USART_div = (FOSC + (BAUD / 2)) / BAUD;
 const std::string msg= "NO UART with this address is Available!! \r\n" ;
 
 class UART

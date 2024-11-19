@@ -28,8 +28,8 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/FreeRTOS.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h \
- ../Core/Inc/utils.h ../Core/Inc/uart.h ../Core/Inc/config.h \
- ../Core/Inc/ip.h ../Core/Inc/oled.h ../Core/Inc/i2c.h \
+ ../Core/Inc/config.h ../Core/Inc/utils.h ../Core/Inc/timer3.h \
+ ../Core/Inc/clock72.h ../Core/Inc/uart.h ../Core/Inc/ip.h \
  ../Core/Inc/semphr.h ../Core/Inc/queue.h
 ../Core/Inc/FreeRTOS.h:
 ../Core/Inc/FreeRTOSConfig.h:
@@ -71,11 +71,11 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/FreeRTOS.h \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h:
-../Core/Inc/utils.h:
-../Core/Inc/uart.h:
 ../Core/Inc/config.h:
+../Core/Inc/utils.h:
+../Core/Inc/timer3.h:
+../Core/Inc/clock72.h:
+../Core/Inc/uart.h:
 ../Core/Inc/ip.h:
-../Core/Inc/oled.h:
-../Core/Inc/i2c.h:
 ../Core/Inc/semphr.h:
 ../Core/Inc/queue.h:

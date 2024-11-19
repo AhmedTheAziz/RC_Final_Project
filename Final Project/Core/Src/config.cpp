@@ -5,31 +5,42 @@
  *      Author: AHMED ABDELAZIZ
  */
 #include "config.h"
-/// <Instructor>
+
+uint8_t config::Count;
+
+/// <Constructor>
  config::config()
  {
+	 if (Count ==0)
+	 {
 	 RCC->APB2ENR =0x00000000;
 	 RCC->APB1ENR=0x00000000;
+	 }
+	 Count++;
  }
 
  /// <Enable Ports and AFIOs>
- void config::ENPA()
- {
-	 RCC->APB2ENR |=(1<<2);
- }
- void config::ENPB()
- {
-	 RCC->APB2ENR |=(1<<3);
- }
- void config::ENPC()
- {
-	 RCC->APB2ENR |=(1<<4);
- }
- void config::AFIOP()
- {
-	 RCC->APB2ENR |=(1<<0);
- }
- void config::UART1EN()
+	 void config::ENPA()
+	 {
+		 RCC->APB2ENR |=(1<<2);
+	 }
+	 void config::ENPB()
+	 {
+		 RCC->APB2ENR |=(1<<3);
+	 }
+	 void config::ENPC()
+	 {
+		 RCC->APB2ENR |=(1<<4);
+	 }
+	 void config::AFIOP()
+	 {
+		 RCC->APB2ENR |=(1<<0);
+	 }
+	void config::TIM3EN()
+	{
+		RCC->APB1ENR |= (1<<1);
+	}
+  void config::UART1EN()
  {
 	// PA8=CK, PA9=TX, PA10=RX
 		//              AFIO     GPIOA    USART1

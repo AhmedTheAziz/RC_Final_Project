@@ -1,3 +1,4 @@
+"./Core/Src/clock72.o"
 "./Core/Src/config.o"
 "./Core/Src/control.o"
 "./Core/Src/croutine.o"
@@ -18,6 +19,7 @@
 "./Core/Src/sysmem.o"
 "./Core/Src/system_stm32f1xx.o"
 "./Core/Src/tasks.o"
+"./Core/Src/timer3.o"
 "./Core/Src/timers.o"
 "./Core/Src/uart.o"
 "./Core/Startup/startup_stm32f103c8tx.o"

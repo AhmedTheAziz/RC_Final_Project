@@ -1,5 +1,5 @@
-Core/Src/op.o: ../Core/Src/op.cpp ../Core/Inc/op.h ../Core/Inc/main.h \
- ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
+Core/Src/timer3.o: ../Core/Src/timer3.cpp ../Core/Inc/timer3.h \
+ ../Core/Inc/main.h ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
  ../Core/Inc/stm32f1xx_hal_conf.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h \
@@ -22,9 +22,8 @@ Core/Src/op.o: ../Core/Src/op.cpp ../Core/Inc/op.h ../Core/Inc/main.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h \
- ../Core/Inc/config.h ../Core/Inc/utils.h ../Core/Inc/timer3.h \
  ../Core/Inc/clock72.h
-../Core/Inc/op.h:
+../Core/Inc/timer3.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 ../Core/Inc/stm32f1xx_hal_conf.h:
@@ -49,7 +48,4 @@ Core/Src/op.o: ../Core/Src/op.cpp ../Core/Inc/op.h ../Core/Inc/main.h \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h:
-../Core/Inc/config.h:
-../Core/Inc/utils.h:
-../Core/Inc/timer3.h:
 ../Core/Inc/clock72.h:

@@ -23,7 +23,8 @@ Core/Src/motor.o: ../Core/Src/motor.cpp ../Core/Inc/motor.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h \
- ../Core/Inc/utils.h
+ ../Core/Inc/config.h ../Core/Inc/utils.h ../Core/Inc/timer3.h \
+ ../Core/Inc/clock72.h
 ../Core/Inc/motor.h:
 ../Core/Inc/op.h:
 ../Core/Inc/main.h:
@@ -50,4 +51,7 @@ Core/Src/motor.o: ../Core/Src/motor.cpp ../Core/Inc/motor.h \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h:
+../Core/Inc/config.h:
 ../Core/Inc/utils.h:
+../Core/Inc/timer3.h:
+../Core/Inc/clock72.h:

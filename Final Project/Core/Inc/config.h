@@ -13,13 +13,14 @@
 class config
 {
 public:
-/// <Instructor>
+/// <Constructor>
  config();
 /// <Enable Ports and AFIOs>
  void ENPA();
  void ENPB();
  void ENPC();
  void AFIOP();
+ void TIM3EN();
  void UART1EN();
  void UART2EN();
  void UART3EN();
@@ -30,6 +31,7 @@ public:
  ~config();
 
 private:
+	static uint8_t Count;
 
 };
 

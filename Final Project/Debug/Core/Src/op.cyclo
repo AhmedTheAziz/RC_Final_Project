@@ -1,5 +1,7 @@
-../Core/Src/op.cpp:12:1:OP::OP(GPIO_TypeDef*, uint8_t, MODE)	15
-../Core/Src/op.cpp:99:7:void OP::ON()	1
-../Core/Src/op.cpp:103:7:void OP::OFF()	1
-../Core/Src/op.cpp:107:7:void OP::TOGGLE()	1
-../Core/Src/op.cpp:112:2:OP::~OP()	1
+../Core/Src/op.cpp:16:1:OP::OP(GPIO_TypeDef*, uint8_t, MODE)	25
+../Core/Src/op.cpp:173:7:void OP::ON()	1
+../Core/Src/op.cpp:177:7:void OP::OFF()	1
+../Core/Src/op.cpp:181:7:void OP::TOGGLE()	1
+../Core/Src/op.cpp:185:6:void OP::PWMON()	1
+../Core/Src/op.cpp:189:6:void OP::PWMOFF()	1
+../Core/Src/op.cpp:193:2:OP::~OP()	1

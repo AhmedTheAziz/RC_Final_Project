@@ -16,20 +16,21 @@ void Motor::CW()
 {
 	Config_->in1.ON();
 	Config_->in2.OFF();
-	Config_->en.ON();
+	//Config_->en.PWMON();
 }
 void Motor::CCW()
 {
 	Config_->in1.OFF();
 	Config_->in2.ON();
-	Config_->en.ON();
+	//Config_->en.PWMON();
 }
 
 void Motor::STOP()
 {
 	Config_->in1.OFF();
 	Config_->in2.OFF();
-	Config_->en.OFF();
+	Config_->en.PWMOFF();
 }
+	///trying to merge op with timer pwm controlling....
 
 

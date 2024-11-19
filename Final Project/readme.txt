@@ -1,27 +1,27 @@
  *Project Name: 
-	DC Motor Electric Car.
+	RC Car.
 *Header Files:
-	1- config.h : (tick)
+	1- config.h : 
 		Enable Clock for Ports and AFIOs 
-	2-utils.h: (tick)
+	2-utils.h: 
 		Set constexpr for Bits,Pins and Regesters per each other 
-	3- op.h: (tick)
+	3- op.h: 
 		Activate GPIO's/AFIO's as O/P's
-	4- ip.h: (tick) //getstats must be within while (1) first.
+--	4- ip.h: (tick) //getstats must be within while (1) first.
 		Activate GPIO's/AFIO's as I/P's 
-	5- motor.h : (tick)
+	5- motor.h : 
 		Control each Motor Indivdually
-	6- control.h: (tick)
+	6- control.h: 
 		Control the Motion of the Car Kit 
-**	7- uart.h: --
+	7- uart.h: 
 		Setting uart Communication with MCU from Mobile or Laptop.
-**	8- oled: --
+	8- timer3.h:
+		Activating TIM3 as PWM mode 1.
+--	9- oled: 
 		A trial to add data to the OLED using I2C.
-----9- l8nbuzz.h: (tick) (Useless)
-		A trial to control the LEDS and Buzzer connected to the MCU.
-	10- nutshell.h: (tick)
+	10- nutshell.h: 
 		Connect all headers in one headerto be included in main.c/main.cpp
-**	11- rtos: -- (uartos.h)
+	11- rtos:  (uartos.h)
 		Using FreeRTOS to time schedule every I/P & O/P and make them appear as they work simultaneously. 
 *Source Files:
 	1- main.c:
@@ -33,3 +33,6 @@
 	2- Test Every File indvidually.
 	3- Make main.c.
 	4- Test. 
+	
+N.B:
+-- not Finished/Applied Header.

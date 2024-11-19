@@ -1,0 +1,2 @@
+../Core/Src/clock72.cpp:10:2:Clock72::Clock72()	16	static
+../Core/Src/clock72.cpp:18:6:void Clock72::Clock_Init()	16	static

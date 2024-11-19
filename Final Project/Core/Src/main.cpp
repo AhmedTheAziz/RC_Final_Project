@@ -7,12 +7,11 @@
 #include "timers.h"
 #include "control.h" // control motor to go forward,backward, right pr left
 #include "uart.h" // enable uart to communicate with Laptop/smart-phone using  HC-05
-#include "oled.h"
+//#include "clock72.h"
+//#include "oled.h"
 #include "semphr.h"
 
 //Queue Handler
-xQueueHandle xQueue;
-//SemaphoreHandle_t  semaphore;
 //Tasks Handlers (just in case!!)
 /*
  TaskHandle_t xHandle_Green;
@@ -25,23 +24,32 @@ xQueueHandle xQueue;
  TaskHandle_t xHandle_Left;
  TaskHandle_t xHandle_Break;
  */
+//SemaphoreHandle_t  semaphore;
+xQueueHandle xQueue;
 
-
-GPIO_TypeDef *  gpiob = GPIOB;
+///<Unsigned Integers>
+unsigned int  Period = 20000;
+unsigned int  Speed = 50;
+unsigned int  Turn = 30;
 ///<declerations Begin>
- UART* bl_test = new(UART1INS) UART(UART1INS);
-	/// <Activate Motor>
-	Moto_Config m1_c = {{GPIOA, 5,MODE::Gen}, {gpiob, 1,MODE::Gen}, {GPIOA, 6,MODE::Gen}}; // activating motor 1 driver as Pin A5 is ins1, B1 is ins2, A6 is Enable (50MHZ output)
-	Moto_Config m2_c = {{GPIOA, 4,MODE::Gen}, {GPIOA, 0,MODE::Gen}, {gpiob, 0,MODE::Gen}};// activating motor 2 driver as Pin A4 is ins1, A0 is ins2, B0 is Enable (50MHZ output)
-	Motor M1(&m1_c); /// OBJ Motor has the name M1 and the address of m1_c
-	Motor M2(&m2_c); /// OBJ Motor has the name M2 and the address of m2_c
-	/// <ACTIVATE Control>
-	Control motion(&M1,&M2); // controlling both motors with motion go forward, backward,right or left
+	/// <Activate Motor's OP Pins>
+	Moto_Config m1_c = {{GPIOA, 5,MODE::Gen}, {GPIOB, 1,MODE::Gen}, {GPIOA, 6,MODE::AF}}; // activating motor 1 driver as Pin A5 is ins1, B1 is ins2, A6 is Enable (50MHZ output)
+	Moto_Config m2_c = {{GPIOA, 4,MODE::Gen}, {GPIOA, 0,MODE::Gen}, {GPIOB, 0,MODE::AF}};// activating motor 2 driver as Pin A4 is ins1, A0 is ins2, B0 is Enable (50MHZ output)
 	//LED and Buzzer
 	OP LED_B(GPIOA,1,MODE::Gen); // PIN A1 is a 50MHZ Output (Blue LED)
 	OP LED_G(GPIOA,2,MODE::Gen); // PIN A2 is a 50MHZ Output (Green LED)
 	OP LED_R(GPIOA,3,MODE::Gen); // PIN A3 is a 50MHZ Output (Red LED)
-	OP BUZZ(gpiob,9,MODE::Gen);// PIN B9 is a 50MHZ output (Buzzer)
+	OP BUZZ(GPIOB,9,MODE::Gen);// PIN B9 is a 50MHZ output (Buzzer)
+	///<Activate Timer3 for PWM>
+	//Clock72 clk;
+	Timer3 tim3(Period,Speed);
+	///<Activate Motor>
+	Motor M1(&m1_c); /// OBJ Motor has the name M1 and the address of m1_c
+	Motor M2(&m2_c); /// OBJ Motor has the name M2 and the address of m2_c
+	///<ACTIVATE BlueTooth>
+ UART* bl_test = new(UART1INS) UART(UART1INS);
+	/// <ACTIVATE Control>
+	Control motion(&M1,&M2); // controlling both motors with motion go forward, backward,right or left
 ///<declerations ENDS>
 ///<UART Task Begins>
 void uartTimerCallback(void *pv)
@@ -69,7 +77,7 @@ while(1)
 		LED_B.OFF();
 		LED_R.OFF();
 		BUZZ.OFF();
-		motion.Forward();
+		motion.Forward(Speed);
 	//	vTaskDelay(200/portTICK_RATE_MS);
 	}
 	else if(reading =='s')
@@ -78,7 +86,8 @@ while(1)
 		LED_R.ON();
 		LED_B.OFF();
 		LED_G.OFF();
-		motion.Backward();
+		BUZZ.ON();
+		motion.Backward(Speed);
 		//vTaskDelay(200/portTICK_RATE_MS);
 
 	}
@@ -88,8 +97,7 @@ while(1)
 		LED_R.OFF();
 		LED_G.OFF();
 		BUZZ.OFF();
-		motion.Right();
-
+		motion.Right(Turn);
 		//	vTaskDelay(200/portTICK_RATE_MS);
 
 	}
@@ -99,8 +107,7 @@ while(1)
 		LED_G.OFF();
 		LED_R.OFF();
 		BUZZ.OFF();
-		motion.Left();
-
+		motion.Left(Turn);
 		//	vTaskDelay(200/portTICK_RATE_MS);
 
 	}
@@ -128,10 +135,10 @@ while(1)
 
 int main()
 {
-///<configurations BEGINS>
-config port;
-port.ENPB();//enable RCC for port B
-port.ENPA();//enable RCC for port A
+	///<configurations BEGINS>
+	 config port;
+	port.ENPB();//enable RCC for port B
+	port.ENPA();//enable RCC for port A
 //port.UART1EN();//enable RCC for UART1
 ///<Configurations ENDS>
 ///<Activating OLED BEGINS>
@@ -155,6 +162,15 @@ if(xQueue != NULL)
 ///<Activating RTOS ENDS>
 while(1)
 {
+	///<testing the new PWM concept>
+	 //<test(1)>
+	/*
+	LED_B.ON();
+	LED_G.OFF();
+	LED_R.OFF();
+	BUZZ.OFF();
+	motion.Right(Turn);
+	*/
 	//not needed infinte loop
 }
 return 0;
